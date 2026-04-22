@@ -1,0 +1,763 @@
+/* ============================================================
+   Wilderness Health — Full-Screen Video Hero Header
+   ============================================================ */
+
+/* ── CSS custom properties ─────────────────────────────────── */
+:root {
+    --wh-green:       #7ac143;   /* brand green  */
+    --wh-green-dark:  #5a9a2e;
+    --wh-white:       #ffffff;
+    --wh-overlay:     rgba(0, 0, 0, 0.42);
+    --wh-font-sans:   'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    --wh-nav-gap:     2.2rem;
+    --wh-utility-h:   52px;
+}
+
+/* ── Hero wrapper ───────────────────────────────────────────── */
+.wh-hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;          /* full-screen */
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow: visible;      /* allow dropdowns to escape */
+    font-family: var(--wh-font-sans);
+    color: var(--wh-white);
+}
+
+.admin-bar .wh-hero {
+    height: calc(100vh - 32px);
+}
+
+/* ── Video background ───────────────────────────────────────── */
+.wh-hero__video-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;       /* contain the video/poster within the hero bounds */
+}
+
+.wh-hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+}
+
+.wh-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--wh-overlay);
+}
+
+/* ── Utility bar ────────────────────────────────────────────── */
+.wh-hero__utility-bar {
+    position: relative;
+    top: 2rem;
+    z-index: 10;
+    width: calc(100% - 4rem);
+    height: var(--wh-utility-h);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 2rem;
+    gap: 1.2rem;
+    background: transparent;
+    opacity: 0;
+    animation: wh-utility-slidedown 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+}
+
+.wh-hero__utility-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+.wh-hero__utility-menu li a {
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.wh-hero__utility-menu li a:hover {
+    color: var(--wh-green);
+}
+
+/* LOGIN button */
+.wh-hero__login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wh-green);
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.5rem 2rem;
+    transition: background 0.2s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+
+.wh-hero__login-btn:hover {
+    background: var(--wh-green-dark);
+    color: var(--wh-white);
+    transform: translateY(-1px);
+}
+
+/* ── Branding / centre ─────────────────────────────────────── */
+.wh-hero__branding {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    padding: 1rem 2rem;
+}
+
+.wh-hero__logo-link {
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+}
+
+/* ── 3-shape animated logo ─────────────────────────────────── */
+.wh-logo {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    /* negative margins pull shapes together so peaks overlap naturally */
+    gap: 0;
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
+    width: clamp(240px, 26vw, 360px);
+}
+
+.wh-logo__shape {
+    display: block;
+    width: 42%;
+    height: auto;
+    flex-shrink: 0;
+    /* pull adjacent shapes closer to overlap and form the full logo */
+    margin-left: -8%;
+    margin-right: -8%;
+    /* start hidden — animation sets initial state */
+    opacity: 0;
+}
+
+/* Left shape: slides in from the right */
+.wh-logo__shape--left {
+    animation: wh-logo-right 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+    transform-origin: center bottom;
+}
+
+/* Center shape: drops in from above */
+.wh-logo__shape--center {
+    animation: wh-logo-center 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.05s forwards;
+    transform-origin: center bottom;
+    /* center shape sits slightly higher (taller peak) */
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+    width: 45%;
+}
+
+/* Right shape: slides in from the left */
+.wh-logo__shape--right {
+    animation: wh-logo-left 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+    transform-origin: center bottom;
+}
+
+/* ── Keyframes ──────────────────────────────────────────────── */
+@keyframes wh-logo-left {
+    from {
+        opacity: 0;
+        transform: translateX(80px) scale(1.6);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes wh-logo-center {
+    from {
+        opacity: 0;
+        transform: translateY(-90px) scale(1.6);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes wh-logo-right {
+    from {
+        opacity: 0;
+        transform: translateX(-80px) scale(1.6);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes wh-utility-slidedown {
+    from {
+        opacity: 0;
+        transform: translateY(-32px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes wh-nav-slidein {
+    from {
+        opacity: 0;
+        transform: translateY(32px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes wh-logo-text-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Respect reduced-motion: skip animation, just show the shapes */
+@media (prefers-reduced-motion: reduce) {
+    .wh-logo__shape {
+        opacity: 1 !important;
+        animation: none !important;
+        transform: none !important;
+    }
+    .wh-hero__primary-nav {
+        opacity: 1 !important;
+        animation: none !important;
+        transform: none !important;
+    }
+    .wh-hero__utility-bar {
+        opacity: 1 !important;
+        animation: none !important;
+        transform: none !important;
+    }
+    .wh-logo-text {
+        opacity: 1 !important;
+        animation: none !important;
+    }
+}
+
+.wh-hero__site-name {
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.wh-hero__tagline {
+    margin: 1rem 0 0;
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--wh-white);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+/* ── Logo text ─────────────────────────────────────────────── */
+.wh-logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.15;
+    margin-top: 0.6rem;
+    opacity: 0;
+    animation: wh-logo-text-fadein 0.9s ease 2s forwards;
+}
+
+.wh-logo-text__main {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(2.8rem, 6.4vw, 4.8rem);
+    font-weight: 300;
+    letter-spacing: 0;
+    color: var(--wh-white);
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.wh-logo-text__sub {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--wh-white);
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* ── Tagline char animation ─────────────────────────────────── */
+.wh-tagline {
+    margin: 0.9rem 0 0;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(1.2rem, 3.2vw, 2.25rem);
+    font-weight: 300;
+    color: var(--wh-white);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    letter-spacing: 0.01em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.wh-tagline__char {
+    display: inline-block;
+    opacity: 0;
+    animation: wh-char-fadein 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wh-tagline__space {
+    width: 0.28em;
+}
+
+/* left-side chars arrive from the right */
+.wh-tagline__char.from-right {
+    animation-name: wh-char-from-right;
+}
+
+/* right-side chars arrive from the left */
+.wh-tagline__char.from-left {
+    animation-name: wh-char-from-left;
+}
+
+/* centre char just fades in */
+.wh-tagline__char.from-center {
+    animation-name: wh-char-fadein;
+}
+
+@keyframes wh-char-from-right {
+    from {
+        opacity: 0;
+        transform: translateX(28px) scale(2.2);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes wh-char-from-left {
+    from {
+        opacity: 0;
+        transform: translateX(-28px) scale(2.2);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes wh-char-fadein {
+    from { opacity: 0; transform: scale(2.2); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Primary navigation ────────────────────────────────────── */
+.wh-hero__primary-nav {
+    position: relative;
+    z-index: 200;           /* above all hero layers */
+    width: 100%;
+    padding: 0.9rem 2rem 3rem;
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    opacity: 0;
+    animation: wh-nav-slidein 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+}
+
+.wh-hero__primary-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+/* Separator via ::before on every item except first */
+.wh-hero__primary-menu > li {
+    display: flex;
+    align-items: center;
+}
+
+.wh-hero__primary-menu > li + li::before {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--wh-green);
+    margin: 0 1.1rem;
+}
+
+.wh-hero__primary-menu > li > a {
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+    padding-block: 1rem;
+}
+
+.wh-hero__primary-menu > li > a:hover,
+.wh-hero__primary-menu > li.current-menu-item > a {
+    color: var(--wh-green);
+}
+
+/* ── Dropdown sub-menus ─────────────────────────────────────── */
+
+/* Hide sub-menus by default */
+.wh-hero__primary-menu .sub-menu {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    top: auto;
+    left: calc(50% + 1rem);
+    transform: translateX(-50%);
+    min-width: 200px;
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem 0;
+    background: rgba(10, 30, 10, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 2px solid var(--wh-green);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
+    z-index: 100;
+    white-space: nowrap;
+}
+
+/* Anchor the parent <li> so the dropdown is positioned relative to it */
+.wh-hero__primary-menu > li {
+    position: relative;
+}
+
+/* Show sub-menu on hover / focus-within */
+.wh-hero__primary-menu > li:hover > .sub-menu,
+.wh-hero__primary-menu > li:focus-within > .sub-menu {
+    display: block;
+}
+
+/* Sub-menu items */
+.wh-hero__primary-menu .sub-menu li {
+    display: block;
+}
+
+/* Remove separator pseudo-element for nested items */
+.wh-hero__primary-menu .sub-menu li::before {
+    display: none !important;
+}
+
+.wh-hero__primary-menu .sub-menu li a {
+    display: block;
+    padding: 0.55rem 1.2rem;
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+
+.wh-hero__primary-menu .sub-menu li a:hover,
+.wh-hero__primary-menu .sub-menu li.current-menu-item > a {
+    background: rgba(122, 193, 67, 0.18);
+    color: var(--wh-green);
+}
+
+/* Nested third-level sub-menus */
+.wh-hero__primary-menu .sub-menu .sub-menu {
+    bottom: 0;
+    top: auto;
+    left: 100%;
+    transform: none;
+    border-bottom: none;
+    border-left: 2px solid var(--wh-green);
+    border-radius: 4px 4px 4px 0;
+}
+
+.wh-hero__primary-menu .sub-menu li:hover > .sub-menu,
+.wh-hero__primary-menu .sub-menu li:focus-within > .sub-menu {
+    display: block;
+}
+
+/* ── Hamburger toggle (hidden on desktop) ───────────────────── */
+.wh-mob-toggle {
+    display: none;
+    position: absolute;
+    top: 2.5rem;
+    right: 2rem;
+    z-index: 300;
+    background: rgba(10, 30, 10, 0.72);
+    border: 1px solid rgba(122, 193, 67, 0.5);
+    border-radius: 6px;
+    padding: 0.55rem 0.65rem;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.wh-mob-toggle:hover {
+    background: rgba(122, 193, 67, 0.25);
+}
+
+.wh-mob-toggle__bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--wh-white);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    transform-origin: center;
+}
+
+/* Animate to X when active */
+.wh-mob-toggle.is-active .wh-mob-toggle__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.wh-mob-toggle.is-active .wh-mob-toggle__bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.wh-mob-toggle.is-active .wh-mob-toggle__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Backdrop ────────────────────────────────────────────────── */
+.wh-mob-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 390;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.wh-mob-backdrop.is-visible {
+    display: block;
+    opacity: 1;
+}
+
+/* ── Mobile panel ────────────────────────────────────────────── */
+.wh-mob-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 100vw);
+    height: 100dvh;
+    background: rgba(8, 22, 8, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-left: 2px solid var(--wh-green);
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+}
+
+.wh-mob-panel.is-open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+/* Close button */
+.wh-mob-panel__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--wh-white);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.wh-mob-panel__close:hover {
+    opacity: 1;
+    color: var(--wh-green);
+}
+
+.admin-bar .wh-mob-panel__close {
+    top: 4rem;
+}
+
+/* Mobile menu list */
+.wh-mob-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    padding: 4.5rem 1.8rem 2rem;
+}
+
+.admin-bar .wh-mob-menu {
+    padding-top: 6.5rem;
+}
+
+.wh-mob-menu > li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.wh-mob-menu > li > a {
+    display: block;
+    padding: 0.9rem 0;
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+}
+
+.wh-mob-menu > li > a:hover,
+.wh-mob-menu > li.current-menu-item > a {
+    color: var(--wh-green);
+}
+
+/* Accordion arrow button */
+.wh-mob-submenu-toggle {
+    position: absolute;
+    top: 0.55rem;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--wh-white);
+    cursor: pointer;
+    padding: 0.4rem;
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.25s;
+}
+
+.wh-mob-submenu-toggle:hover { opacity: 1; }
+
+.wh-mob-menu li.is-expanded > .wh-mob-submenu-toggle {
+    transform: rotate(180deg);
+    color: var(--wh-green);
+    opacity: 1;
+}
+
+/* Sub-menus — hidden until expanded */
+.wh-mob-menu .sub-menu {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0.4rem 1rem;
+}
+
+.wh-mob-menu li.is-expanded > .sub-menu {
+    display: block;
+}
+
+.wh-mob-menu .sub-menu li a {
+    display: block;
+    padding: 0.55rem 0;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+}
+
+.wh-mob-menu .sub-menu li a:hover {
+    color: var(--wh-green);
+}
+
+/* Login link at bottom */
+.wh-mob-panel__login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem;
+    background: var(--wh-green);
+    color: var(--wh-white);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.7rem 2rem;
+    transition: background 0.2s;
+    align-self: flex-start;
+}
+
+.wh-mob-panel__login:hover {
+    background: var(--wh-green-dark);
+    color: var(--wh-white);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .wh-hero {
+        height: 100svh;
+    }
+
+    /* Hide desktop nav, show hamburger */
+    .wh-hero__primary-nav {
+        display: none;
+    }
+
+    .wh-hero__utility-bar {
+        padding: 0;
+        justify-content: flex-start;
+    }
+
+    /* Hide utility login — it's inside the panel */
+    .wh-hero__utility-bar .wh-hero__login-btn {
+        display: none;
+    }
+
+    .wh-mob-toggle {
+        display: flex;
+    }
+}
+
+/* ── Reduced-motion: swap video for poster still ────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .wh-hero__video {
+        display: none;
+    }
+    .wh-hero__video-wrap {
+        background-size: cover;
+        background-position: center;
+    }
+}
