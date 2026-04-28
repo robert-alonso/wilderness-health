@@ -4,11 +4,12 @@
 
 /* ── CSS custom properties ─────────────────────────────────── */
 :root {
-    --wh-green:       #7ac143;   /* brand green  */
-    --wh-green-dark:  #5a9a2e;
+    --wh-green:       #A9E357;   /* brand green  */
+    --wh-green-dark:  #2B662F;
     --wh-white:       #ffffff;
+    --wh-gray:        #F9F6F4;
     --wh-overlay:     rgba(0, 0, 0, 0.42);
-    --wh-font-sans:   'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    --wh-font-sans:   'Arial', sans-serif;
     --wh-nav-gap:     2.2rem;
     --wh-utility-h:   52px;
 }
@@ -16,6 +17,7 @@
 /* ── Hero wrapper ───────────────────────────────────────────── */
 .wh-hero {
     position: relative;
+    z-index: 1;             /* stacking context — keeps hero below sticky (z-index: 500) */
     width: 100%;
     height: 100vh;          /* full-screen */
     min-height: 520px;
@@ -98,20 +100,20 @@
     align-items: center;
     justify-content: center;
     background: var(--wh-green);
-    color: var(--wh-white);
+    color: var(--wh-gray);
     text-decoration: none;
     font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     padding: 0.5rem 2rem;
+    border-radius: 4px;
     transition: background 0.2s ease, transform 0.15s ease;
     white-space: nowrap;
 }
 
 .wh-hero__login-btn:hover {
     background: var(--wh-green-dark);
-    color: var(--wh-white);
-    transform: translateY(-1px);
+    color: var(--wh-gray);
 }
 
 /* ── Branding / centre ─────────────────────────────────────── */
@@ -571,7 +573,7 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-left: 2px solid var(--wh-green);
-    z-index: 400;
+    z-index: 550;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -723,6 +725,183 @@
     to   { transform: scale(1);    }
 }
 
+/* ── Sticky header ──────────────────────────────────────────── */
+.wh-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    background: var(--wh-white);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition: box-shadow 0.2s ease;
+}
+
+.wh-sticky.is-visible {
+    pointer-events: auto;
+}
+
+.admin-bar .wh-sticky {
+    top: 32px;
+}
+
+.wh-sticky__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.6rem 2rem;
+}
+
+/* Logo */
+.wh-sticky__logo-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+    line-height: 0;
+}
+
+.wh-sticky__logo {
+    height: 42px;
+    width: auto;
+    display: block;
+}
+
+/* Nav */
+.wh-sticky__nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+}
+
+.wh-sticky__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+.wh-sticky__menu > li {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.wh-sticky__menu > li + li::before {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background: var(--wh-green);
+    margin: 0 1rem;
+    opacity: 0.6;
+}
+
+.wh-sticky__menu > li > a {
+    color: #1a2a1a;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.9rem 0.2rem;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.wh-sticky__menu > li > a:hover,
+.wh-sticky__menu > li.current-menu-item > a {
+    color: var(--wh-green-dark);
+}
+
+/* Dropdown */
+.wh-sticky__menu .sub-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 190px;
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem 0;
+    background: var(--wh-white);
+    border-top: 2px solid var(--wh-green);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+    z-index: 600;
+    white-space: nowrap;
+}
+
+.wh-sticky__menu > li:hover > .sub-menu,
+.wh-sticky__menu > li:focus-within > .sub-menu {
+    display: block;
+}
+
+.wh-sticky__menu .sub-menu li::before { display: none !important; }
+
+.wh-sticky__menu .sub-menu li a {
+    display: block;
+    padding: 0.5rem 1.1rem;
+    color: #1a2a1a;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wh-sticky__menu .sub-menu li a:hover {
+    background: rgba(122, 193, 67, 0.10);
+    color: var(--wh-green-dark);
+}
+
+/* Login */
+.wh-sticky__login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wh-green);
+    color: var(--wh-green-dark) !important;
+    border: solid 1px var(--wh-green);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.4rem 1.4rem;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.wh-sticky__login:hover {
+    background: var(--wh-white);
+    border: solid 1px var(--wh-green);
+}
+
+/* Mobile toggle (hidden on desktop) */
+.wh-sticky__mob-toggle {
+    display: none;
+    background: var(--wh-green-dark);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    border: none;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .wh-hero {
@@ -745,6 +924,19 @@
     }
 
     .wh-mob-toggle {
+        display: flex;
+    }
+}
+
+/* ── Sticky header mobile breakpoint ───────────────────────── */
+@media (max-width: 1080px) {
+    /* Hide nav + login in sticky, show hamburger */
+    .wh-sticky__nav,
+    .wh-sticky__login {
+        display: none;
+    }
+
+    .wh-sticky__mob-toggle {
         display: flex;
     }
 }

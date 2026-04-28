@@ -123,6 +123,49 @@ $tagline    = get_bloginfo( 'description' );
 
 </header><!-- .wh-hero -->
 
+<!-- ── Sticky header (appears after hero scrolls out of view) ── -->
+<header id="wh-sticky" class="wh-sticky" aria-hidden="true">
+    <div class="wh-sticky__inner">
+
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="wh-sticky__logo-link" aria-label="<?php echo esc_attr( $site_name ); ?>">
+            <img
+                src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/images/logo-horizontal.svg"
+                alt="<?php echo esc_attr( $site_name ); ?>"
+                class="wh-sticky__logo"
+                width="200"
+                height="48"
+            >
+        </a>
+
+        <nav class="wh-sticky__nav" aria-label="<?php esc_attr_e( 'Primary navigation', 'kero-creative' ); ?>">
+            <?php
+            wp_nav_menu( array(
+                'theme_location' => 'primary-nav',
+                'menu_class'     => 'wh-sticky__menu',
+                'container'      => false,
+                'fallback_cb'    => false,
+            ) );
+            ?>
+        </nav>
+
+        <a href="/login?redirect_to=/mywh/" class="wh-sticky__login">
+            <?php esc_html_e( 'LOG IN', 'kero-creative' ); ?>
+        </a>
+
+        <button
+            class="wh-sticky__mob-toggle"
+            aria-label="<?php esc_attr_e( 'Open menu', 'kero-creative' ); ?>"
+            aria-expanded="false"
+            aria-controls="wh-mob-panel"
+        >
+            <span class="wh-mob-toggle__bar"></span>
+            <span class="wh-mob-toggle__bar"></span>
+            <span class="wh-mob-toggle__bar"></span>
+        </button>
+
+    </div>
+</header><!-- .wh-sticky -->
+
 <!-- ── Mobile nav panel (outside header so it's not clipped) ── -->
 <div class="wh-mob-backdrop" aria-hidden="true"></div>
 
@@ -148,16 +191,17 @@ $tagline    = get_bloginfo( 'description' );
 
 <script>
 (function () {
-    var toggle   = document.querySelector('.wh-mob-toggle');
-    var panel    = document.getElementById('wh-mob-panel');
-    var backdrop = document.querySelector('.wh-mob-backdrop');
-    var closeBtn = document.querySelector('.wh-mob-panel__close');
+    var toggle       = document.querySelector('.wh-mob-toggle');
+    var stickyToggle = document.querySelector('.wh-sticky__mob-toggle');
+    var panel        = document.getElementById('wh-mob-panel');
+    var backdrop     = document.querySelector('.wh-mob-backdrop');
+    var closeBtn     = document.querySelector('.wh-mob-panel__close');
 
     function openMenu() {
         panel.classList.add('is-open');
         backdrop.classList.add('is-visible');
-        toggle.setAttribute('aria-expanded', 'true');
-        toggle.classList.add('is-active');
+        if (toggle) { toggle.setAttribute('aria-expanded', 'true'); toggle.classList.add('is-active'); }
+        if (stickyToggle) { stickyToggle.setAttribute('aria-expanded', 'true'); stickyToggle.classList.add('is-active'); }
         panel.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
     }
@@ -165,16 +209,23 @@ $tagline    = get_bloginfo( 'description' );
     function closeMenu() {
         panel.classList.remove('is-open');
         backdrop.classList.remove('is-visible');
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.classList.remove('is-active');
+        if (toggle) { toggle.setAttribute('aria-expanded', 'false'); toggle.classList.remove('is-active'); }
+        if (stickyToggle) { stickyToggle.setAttribute('aria-expanded', 'false'); stickyToggle.classList.remove('is-active'); }
         panel.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
     }
 
-    if (toggle && panel) {
-        toggle.addEventListener('click', function () {
-            panel.classList.contains('is-open') ? closeMenu() : openMenu();
-        });
+    if (panel) {
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                panel.classList.contains('is-open') ? closeMenu() : openMenu();
+            });
+        }
+        if (stickyToggle) {
+            stickyToggle.addEventListener('click', function () {
+                panel.classList.contains('is-open') ? closeMenu() : openMenu();
+            });
+        }
         closeBtn && closeBtn.addEventListener('click', closeMenu);
         backdrop && backdrop.addEventListener('click', closeMenu);
 
@@ -228,10 +279,12 @@ $tagline    = get_bloginfo( 'description' );
 </script>
 
 <script>
-/* Scroll-driven reveal: primary nav, tagline */
+/* Scroll-driven reveal: primary nav, tagline + sticky header after hero */
 (function () {
     var primaryNav = document.querySelector('.wh-hero__primary-nav');
     var tagline    = document.querySelector('.wh-tagline');
+    var hero       = document.getElementById('wh-hero');
+    var sticky     = document.getElementById('wh-sticky');
 
     /* Each element reveals over a scroll window of RANGE px,
        staggered so tagline leads, then nav */
@@ -264,6 +317,17 @@ $tagline    = get_bloginfo( 'description' );
                 });
             }
         });
+
+        /* Sticky header: slide in once hero bottom reaches top of viewport */
+        if (sticky && hero) {
+            var heroBottom = hero.getBoundingClientRect().bottom;
+            /* Reveal over 60px after the hero bottom crosses viewport top */
+            var p = clamp((0 - heroBottom) / 60, 0, 1);
+            sticky.style.opacity   = p;
+            sticky.style.transform = 'translateY(' + ((1 - p) * -100) + '%)';
+            sticky.setAttribute('aria-hidden', p < 0.05 ? 'true' : 'false');
+            sticky.classList.toggle('is-visible', p > 0.05);
+        }
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
