@@ -68,7 +68,7 @@
     gap: 1.2rem;
     background: transparent;
     opacity: 0;
-    animation: wh-utility-slidedown 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+    animation: wh-utility-slidedown 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.9s forwards;
 }
 
 .wh-hero__utility-menu {
@@ -240,7 +240,7 @@
     to   { opacity: 1; }
 }
 
-/* Respect reduced-motion: skip animation, just show the shapes */
+/* Reduce-motion: skip animation, just show the shapes */
 @media (prefers-reduced-motion: reduce) {
     .wh-logo__shape {
         opacity: 1 !important;
@@ -249,8 +249,8 @@
     }
     .wh-hero__primary-nav {
         opacity: 1 !important;
-        animation: none !important;
         transform: none !important;
+        transition: none !important;
     }
     .wh-hero__utility-bar {
         opacity: 1 !important;
@@ -260,6 +260,15 @@
     .wh-logo-text {
         opacity: 1 !important;
         animation: none !important;
+    }
+    .wh-hero__video {
+        animation: none !important;
+        transform: none !important;
+    }
+    .wh-tagline__char {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
     }
 }
 
@@ -331,53 +340,35 @@
 .wh-tagline__char {
     display: inline-block;
     opacity: 0;
-    animation: wh-char-fadein 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform: scale(2.2);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    /* animation-delay repurposed as transition-delay via inline style */
 }
 
 .wh-tagline__space {
     width: 0.28em;
 }
 
-/* left-side chars arrive from the right */
+/* left-side chars start offset to the right */
 .wh-tagline__char.from-right {
-    animation-name: wh-char-from-right;
+    transform: translateX(28px) scale(2.2);
 }
 
-/* right-side chars arrive from the left */
+/* right-side chars start offset to the left */
 .wh-tagline__char.from-left {
-    animation-name: wh-char-from-left;
+    transform: translateX(-28px) scale(2.2);
 }
 
-/* centre char just fades in */
+/* centre char just scales in (default state already set above) */
 .wh-tagline__char.from-center {
-    animation-name: wh-char-fadein;
+    transform: scale(2.2);
 }
 
-@keyframes wh-char-from-right {
-    from {
-        opacity: 0;
-        transform: translateX(28px) scale(2.2);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes wh-char-from-left {
-    from {
-        opacity: 0;
-        transform: translateX(-28px) scale(2.2);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes wh-char-fadein {
-    from { opacity: 0; transform: scale(2.2); }
-    to   { opacity: 1; transform: scale(1); }
+/* Revealed state — set by scroll JS */
+.wh-tagline__char.is-revealed {
+    opacity: 1;
+    transform: translateX(0) scale(1);
 }
 
 /* ── Primary navigation ────────────────────────────────────── */
@@ -390,7 +381,8 @@
     justify-content: center;
     overflow: visible;
     opacity: 0;
-    animation: wh-nav-slidein 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .wh-hero__primary-menu {
@@ -723,6 +715,12 @@
 .wh-mob-panel__login:hover {
     background: var(--wh-green-dark);
     color: var(--wh-white);
+}
+
+/* Ken Burns one-time zoom on hero video */
+@keyframes wh-video-kenburns {
+    from { transform: scale(1.09); }
+    to   { transform: scale(1);    }
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */

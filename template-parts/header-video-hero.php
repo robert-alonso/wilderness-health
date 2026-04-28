@@ -41,7 +41,6 @@ $tagline    = get_bloginfo( 'description' );
             class="wh-hero__video"
             autoplay
             muted
-            loop
             playsinline
             preload="auto"
             poster="<?php echo esc_url( $poster ); ?>"
@@ -201,31 +200,73 @@ $tagline    = get_bloginfo( 'description' );
 </script>
 
 <script>
-/* Tagline character split — center slide-in animation */
+/* Tagline character split — builds spans with transition-delay for scroll reveal */
 (function () {
     var el = document.querySelector('.wh-tagline');
     if ( ! el ) return;
 
-    var text  = el.getAttribute('data-tagline') || '';
-    var chars = text.split('');
-    var total = chars.length;
-    var mid   = (total - 1) / 2;
-    var BASE_DELAY  = 2.9;   /* seconds — fires after logo+text animations */
-    var STAGGER     = 0.045; /* seconds between each char */
+    var text    = el.getAttribute('data-tagline') || '';
+    var chars   = text.split('');
+    var total   = chars.length;
+    var mid     = (total - 1) / 2;
+    var STAGGER = 0.04;   /* seconds between each char during the transition */
 
     var html = chars.map(function (ch, i) {
-        var dist  = Math.abs(i - mid);          /* distance from centre */
-        /* outermost chars start first, centre char arrives last */
-        var delay = BASE_DELAY + (mid - dist) * STAGGER;
-        /* direction: left-half slides from LEFT, right-half slides from RIGHT */
+        var dist  = Math.abs(i - mid);
+        /* outermost chars reveal first, centre char last */
+        var delay = (mid - dist) * STAGGER;
         var dir   = i < mid ? -1 : (i > mid ? 1 : 0);
         var cls   = dir < 0 ? 'from-left' : (dir > 0 ? 'from-right' : 'from-center');
         if (ch === ' ') {
-            return '<span class="wh-tagline__char wh-tagline__space" aria-hidden="true" style="animation-delay:' + delay.toFixed(3) + 's"> </span>';
+            return '<span class="wh-tagline__char wh-tagline__space" aria-hidden="true" style="transition-delay:' + delay.toFixed(3) + 's"> </span>';
         }
-        return '<span class="wh-tagline__char ' + cls + '" aria-hidden="true" style="animation-delay:' + delay.toFixed(3) + 's">' + ch + '</span>';
+        return '<span class="wh-tagline__char ' + cls + '" aria-hidden="true" style="transition-delay:' + delay.toFixed(3) + 's">' + ch + '</span>';
     }).join('');
 
     el.innerHTML = html;
+})();
+</script>
+
+<script>
+/* Scroll-driven reveal: primary nav, tagline */
+(function () {
+    var primaryNav = document.querySelector('.wh-hero__primary-nav');
+    var tagline    = document.querySelector('.wh-tagline');
+
+    /* Each element reveals over a scroll window of RANGE px,
+       staggered so tagline leads, then nav */
+    var items = [
+        { el: tagline,    start: 20, end: 100 },
+        { el: primaryNav, start: 40, end: 120 }
+    ];
+
+    var taglineRevealed = false;
+
+    function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
+
+    function onScroll() {
+        var y = window.scrollY || window.pageYOffset;
+
+        items.forEach(function (item) {
+            if ( ! item.el ) return;
+            var p = clamp((y - item.start) / (item.end - item.start), 0, 1);
+
+            if (item.el === primaryNav) {
+                item.el.style.opacity   = p;
+                item.el.style.transform = 'translateY(' + ((1 - p) * 24) + 'px)';
+            }
+
+            /* Tagline: flip .is-revealed on chars once threshold crossed */
+            if (item.el === tagline && p > 0 && !taglineRevealed) {
+                taglineRevealed = true;
+                tagline.querySelectorAll('.wh-tagline__char').forEach(function (ch) {
+                    ch.classList.add('is-revealed');
+                });
+            }
+        });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 })();
 </script>
