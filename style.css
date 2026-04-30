@@ -9,3 +9,12 @@ Text Domain: kero-creative
 */
 
 /* Add your custom CSS below this line */
+.aspect-half img {
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+}
+
+.aspect-square img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
