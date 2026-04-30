@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Shortcodes.
+ */
+require_once get_stylesheet_directory() . '/inc/shortcode-infographic.php';
+
+/**
  * Enqueue parent and child theme styles.
  */
 function the7_child_enqueue_styles() {
@@ -43,6 +48,19 @@ function wh_enqueue_hero_styles() {
         get_stylesheet_directory_uri() . '/assets/css/hero.css',
         array(),
         wp_get_theme()->get( 'Version' )
+    );
+    wp_enqueue_style(
+        'wh-infographic-style',
+        get_stylesheet_directory_uri() . '/assets/css/infographic.css',
+        array(),
+        wp_get_theme()->get( 'Version' )
+    );
+    wp_enqueue_script(
+        'wh-infographic-js',
+        get_stylesheet_directory_uri() . '/assets/js/infographic.js',
+        array(),
+        wp_get_theme()->get( 'Version' ),
+        true   /* load in footer */
     );
 }
 add_action( 'wp_enqueue_scripts', 'wh_enqueue_hero_styles' );
