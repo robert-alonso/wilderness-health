@@ -35,23 +35,15 @@ $tagline    = get_bloginfo( 'description' );
         </a>
     </div>
 
-    <!-- ── Video background ────────────────────────────────── -->
+    <!-- ── Background image ─────────────────────────────────── -->
     <div class="wh-hero__video-wrap" aria-hidden="true">
-        <video
-            class="wh-hero__video"
-            autoplay
-            muted
-            playsinline
-            preload="auto"
-            poster="<?php echo esc_url( $poster ); ?>"
+        <img
+            class="wh-hero__bg-image"
+            src="<?php echo esc_url( $poster ); ?>"
+            alt=""
+            role="presentation"
+            aria-hidden="true"
         >
-            <?php if ( $video_webm ) : ?>
-                <source src="<?php echo esc_url( $video_webm ); ?>" type="video/webm">
-            <?php endif; ?>
-            <?php if ( $video_mp4 ) : ?>
-                <source src="<?php echo esc_url( $video_mp4 ); ?>" type="video/mp4">
-            <?php endif; ?>
-        </video>
         <div class="wh-hero__overlay" aria-hidden="true"></div>
     </div>
 
@@ -93,7 +85,7 @@ $tagline    = get_bloginfo( 'description' );
         </div>
 
         <?php if ( $tagline ) : ?>
-            <p class="wh-tagline" data-tagline="<?php echo esc_attr( $tagline ); ?>" aria-label="<?php echo esc_attr( $tagline ); ?>"></p>
+            <p class="wh-tagline"><?php echo esc_html( $tagline ); ?></p>
         <?php endif; ?>
     </div>
 
@@ -251,49 +243,17 @@ $tagline    = get_bloginfo( 'description' );
 </script>
 
 <script>
-/* Tagline character split — builds spans with transition-delay for scroll reveal */
-(function () {
-    var el = document.querySelector('.wh-tagline');
-    if ( ! el ) return;
-
-    var text    = el.getAttribute('data-tagline') || '';
-    var chars   = text.split('');
-    var total   = chars.length;
-    var mid     = (total - 1) / 2;
-    var STAGGER = 0.04;   /* seconds between each char during the transition */
-
-    var html = chars.map(function (ch, i) {
-        var dist  = Math.abs(i - mid);
-        /* outermost chars reveal first, centre char last */
-        var delay = (mid - dist) * STAGGER;
-        var dir   = i < mid ? -1 : (i > mid ? 1 : 0);
-        var cls   = dir < 0 ? 'from-left' : (dir > 0 ? 'from-right' : 'from-center');
-        if (ch === ' ') {
-            return '<span class="wh-tagline__char wh-tagline__space" aria-hidden="true" style="transition-delay:' + delay.toFixed(3) + 's"> </span>';
-        }
-        return '<span class="wh-tagline__char ' + cls + '" aria-hidden="true" style="transition-delay:' + delay.toFixed(3) + 's">' + ch + '</span>';
-    }).join('');
-
-    el.innerHTML = html;
-})();
-</script>
-
-<script>
 /* Scroll-driven reveal: primary nav, tagline + sticky header after hero */
 (function () {
     var primaryNav = document.querySelector('.wh-hero__primary-nav');
-    var tagline    = document.querySelector('.wh-tagline');
     var hero       = document.getElementById('wh-hero');
     var sticky     = document.getElementById('wh-sticky');
 
     /* Each element reveals over a scroll window of RANGE px,
        staggered so tagline leads, then nav */
     var items = [
-        { el: tagline,    start: 20, end: 100 },
         { el: primaryNav, start: 40, end: 120 }
     ];
-
-    var taglineRevealed = false;
 
     function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
 
@@ -307,14 +267,6 @@ $tagline    = get_bloginfo( 'description' );
             if (item.el === primaryNav) {
                 item.el.style.opacity   = p;
                 item.el.style.transform = 'translateY(' + ((1 - p) * 24) + 'px)';
-            }
-
-            /* Tagline: flip .is-revealed on chars once threshold crossed */
-            if (item.el === tagline && p > 0 && !taglineRevealed) {
-                taglineRevealed = true;
-                tagline.querySelectorAll('.wh-tagline__char').forEach(function (ch) {
-                    ch.classList.add('is-revealed');
-                });
             }
         });
 

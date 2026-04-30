@@ -42,12 +42,14 @@
     overflow: hidden;       /* contain the video/poster within the hero bounds */
 }
 
-.wh-hero__video {
+.wh-hero__bg-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center center;
     display: block;
+    transform-origin: center center;
+    animation: wh-bg-zoomout 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .wh-hero__overlay {
@@ -70,7 +72,7 @@
     gap: 1.2rem;
     background: transparent;
     opacity: 0;
-    animation: wh-utility-slidedown 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2.9s forwards;
+    animation: wh-utility-slidedown 0.5s cubic-bezier(0.22, 1, 0.36, 1) 3.2s forwards;
 }
 
 .wh-hero__utility-menu {
@@ -160,13 +162,13 @@
 
 /* Left shape: slides in from the right */
 .wh-logo__shape--left {
-    animation: wh-logo-right 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+    animation: wh-logo-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
     transform-origin: center bottom;
 }
 
 /* Center shape: drops in from above */
 .wh-logo__shape--center {
-    animation: wh-logo-center 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.05s forwards;
+    animation: wh-logo-center 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
     transform-origin: center bottom;
     /* center shape sits slightly higher (taller peak) */
     margin-bottom: 0;
@@ -177,11 +179,20 @@
 
 /* Right shape: slides in from the left */
 .wh-logo__shape--right {
-    animation: wh-logo-left 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+    animation: wh-logo-left 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
     transform-origin: center bottom;
 }
 
 /* ── Keyframes ──────────────────────────────────────────────── */
+@keyframes wh-bg-zoomout {
+    from {
+        transform: scale(1.3);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
 @keyframes wh-logo-left {
     from {
         opacity: 0;
@@ -263,14 +274,14 @@
         opacity: 1 !important;
         animation: none !important;
     }
-    .wh-hero__video {
+    .wh-hero__bg-image {
         animation: none !important;
         transform: none !important;
     }
-    .wh-tagline__char {
+    .wh-tagline {
         opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
+        animation: none !important;
+        letter-spacing: 0.01em !important;
     }
 }
 
@@ -300,7 +311,7 @@
     line-height: 1.15;
     margin-top: 0.6rem;
     opacity: 0;
-    animation: wh-logo-text-fadein 0.9s ease 2s forwards;
+    animation: wh-logo-text-fadein 0.6s ease 1.1s forwards;
 }
 
 .wh-logo-text__main {
@@ -323,7 +334,7 @@
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-/* ── Tagline char animation ─────────────────────────────────── */
+/* ── Tagline ────────────────────────────────────────────────── */
 .wh-tagline {
     margin: 0.9rem 0 0;
     font-family: 'Inter', sans-serif;
@@ -332,46 +343,27 @@
     color: var(--wh-white);
     text-shadow: 0 1px 6px rgba(0,0,0,0.5);
     letter-spacing: 0.01em;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    overflow: hidden;
+    text-align: center;
     line-height: 1.4;
-}
-
-.wh-tagline__char {
-    display: inline-block;
     opacity: 0;
-    transform: scale(2.2);
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    /* animation-delay repurposed as transition-delay via inline style */
+    will-change: transform, opacity;
+    animation: wh-tagline-reveal 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2.0s forwards;
 }
 
-.wh-tagline__space {
-    width: 0.28em;
+@keyframes wh-tagline-reveal {
+    0% {
+        opacity: 0;
+        transform: scaleX(1.5);
+    }
+    40% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
 }
 
-/* left-side chars start offset to the right */
-.wh-tagline__char.from-right {
-    transform: translateX(28px) scale(2.2);
-}
-
-/* right-side chars start offset to the left */
-.wh-tagline__char.from-left {
-    transform: translateX(-28px) scale(2.2);
-}
-
-/* centre char just scales in (default state already set above) */
-.wh-tagline__char.from-center {
-    transform: scale(2.2);
-}
-
-/* Revealed state — set by scroll JS */
-.wh-tagline__char.is-revealed {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-}
 
 /* ── Primary navigation ────────────────────────────────────── */
 .wh-hero__primary-nav {
@@ -942,12 +934,4 @@
 }
 
 /* ── Reduced-motion: swap video for poster still ────────────── */
-@media (prefers-reduced-motion: reduce) {
-    .wh-hero__video {
-        display: none;
-    }
-    .wh-hero__video-wrap {
-        background-size: cover;
-        background-position: center;
-    }
-}
+
